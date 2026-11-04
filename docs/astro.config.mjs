@@ -4,8 +4,8 @@ import starlight from '@astrojs/starlight';
 
 // https://astro.build/config
 export default defineConfig({
-	// GitHub Pages serves this project from /StupidCloud; local development uses /.
-	base: process.env.GITHUB_ACTIONS === 'true' ? '/StupidCloud' : '/',
+	// This site uses a custom domain, so it is served from the domain root.
+	base: '/',
 	integrations: [
 		starlight({
 			title: {
