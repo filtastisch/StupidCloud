@@ -1,26 +1,73 @@
 ---
 title: Architecture
-description: The planned controller, node agent, and management interfaces.
+description: The intended controller/node design and what exists in the codebase today.
 ---
 
-StupidCloud is designed around a central controller and a set of node agents. The controller holds the desired configuration and assigns work; nodes apply that work on their hosts and report their current state.
+StupidCloud is designed around a **central controller** and **node agents** running on managed hosts. The controller is the source of truth for *desired state*; nodes apply work locally (primarily via Docker in the target design) and report *observed state*.
 
-## Controller
+> **Implementation status:** The repository contains controller lifecycle scaffolding and manager placeholders. Full controller–node communication, Docker orchestration, persistence, proxy integration, and management interfaces are not complete. Treat sections below as the **target architecture** unless marked as implemented.
 
-The controller is the coordination point. Its planned responsibilities include scheduling, user and template management, the API, and management interfaces. It should be the source of truth for the desired state of the cluster.
+## High-level components
 
-## Node agent
+### Controller
 
-A node agent runs on each managed host. It communicates with the controller, creates and manages server containers through Docker, and reports results and state back to the controller.
+Planned responsibilities:
 
-## Management interfaces
+- Accept and coordinate work for nodes/services/instances.
+- Schedule instances onto suitable nodes (resources, labels, capacity).
+- Manage templates, configuration, users, and permissions.
+- Own the API surface (internal gRPC, web REST/WebSocket, SSH/TUI/CLI integrations).
+- Persist authoritative state (planned: PostgreSQL).
 
-The project plans SSH based CLI and TUI access through the controller, plus a separate web interface. These interfaces should use the same controller APIs and operations.
+**Current code:** `src/cmd/controller/main.go` starts the process, loads config, and runs `app.Controller.Start(ctx)`. `src/internal/app/controller.go` initializes managers (`service`, `node`, `proxy`) and holds fields for SSH/web/gRPC servers, but `Start` currently waits for shutdown.
 
-## Planned communication and storage
+### Node agent
 
-The current target design uses gRPC and Protocol Buffers for internal controller to node communication, a REST API for web clients, WebSockets for live updates, and PostgreSQL for persistent data. These are plans and may change as implementation progresses.
+Planned responsibilities:
+
+- Run on each managed host with access to the local Docker engine.
+- Establish an **outbound, authenticated** connection to the controller (planned: gRPC/Protobuf).
+- Execute container operations (create/start/stop/remove, logs, health/state).
+- Report heartbeats, capabilities/resources, and instance status.
+- Cache artifacts/templates locally where appropriate.
+
+**Current code:** `src/cmd/node/main.go` is a stub. Node behavior is a roadmap item.
+
+### Management interfaces
+
+Planned:
+
+- **SSH** management (public-key oriented), hosting CLI/TUI experiences.
+- **TUI** (Bubble Tea) and **CLI** over shared application services.
+- **Web UI** (planned React/Next.js) backed by controller REST/WebSocket APIs.
+
+These interfaces should share the same authorization and application-service logic.
+
+## Communication and data (planned)
+
+| Boundary | Planned technology | Notes |
+|---|---|---|
+| Controller ↔ Node | gRPC + Protocol Buffers | Authenticated/encrypted; idempotent operations; reconnection/backoff. |
+| Web client ↔ Controller | REST API | Versioned (e.g., `/api/v1`). |
+| Live updates | WebSocket | Authenticated; scoped by permissions. |
+| Persistence | PostgreSQL | Migrations, constraints (e.g., port reservations). |
+| Configuration | TOML today / model evolving | Current loader uses TOML; broader config model is planned. |
+
+## Minecraft/proxy integration (planned)
+
+StupidCloud targets Minecraft server workloads with **Velocity** and **BungeeCord** integration. A bridge component is expected to receive desired proxy state from the controller and reconcile it via proxy APIs, registering backends after health checks and draining on shutdown.
+
+## Security boundaries
+
+- Nodes should initiate connections to the controller (reduces inbound exposure on nodes).
+- Internal traffic should be TLS-protected with mutual authentication where appropriate.
+- Docker socket access is high-privilege and should be limited to the node agent.
+- Backend Minecraft ports should not be exposed publicly unless explicitly intended.
+
+See [Security](/guides/security/) for details and caveats.
 
 ## Related pages
 
-- [Project status and planned technologies](/reference/project-status/)
+- [Project status](/reference/project-status/)
+- [Roadmap](/reference/roadmap/)
+- [Glossary](/reference/glossary/)

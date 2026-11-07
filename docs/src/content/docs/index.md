@@ -1,32 +1,38 @@
 ---
 title: StupidCloud
-description: Documentation for the planned Go based Minecraft server orchestration platform.
+description: Documentation for the planned Go-based Minecraft server orchestration platform.
 template: splash
 hero:
   tagline: Plan, run, and manage distributed Minecraft server infrastructure.
   actions:
-    - text: Explore the architecture
-      link: /guides/architecture/
+    - text: Get started
+      link: /guides/getting-started/
       icon: right-arrow
+    - text: Architecture
+      link: /guides/architecture/
+      icon: open-book
     - text: Project status
       link: /reference/project-status/
-      icon: open-book
+      variant: minimal
 ---
 
-StupidCloud is an early stage project for centrally managing Minecraft servers across multiple hosts. Servers are intended to run in Docker containers, with a controller coordinating configuration and work across node agents.
+StupidCloud is an **early-stage, Go-based server orchestration platform** for managing distributed **Minecraft** server infrastructure. The target design runs individual Minecraft servers in separate **Docker containers**, coordinated by a central **controller** and executed by **node agents** on managed hosts.
 
-> **Project status:** StupidCloud is under early development. This documentation describes the intended system; not every component is implemented yet.
+> **Status:** The documentation describes the intended system and the current state of the codebase. Many components are planned but not implemented yet. Check the [project status](/reference/project-status/) and [roadmap](/reference/roadmap/) before relying on a feature.
 
 ## What StupidCloud aims to provide
 
-- Central management of multiple hosts (nodes).
+- Central management of multiple hosts (**nodes**).
 - Minecraft server instances running in Docker containers.
 - Reusable templates and consistent configuration.
-- Scheduling and centralized port management.
-- Integration with Velocity and BungeeCord.
-- SSH, CLI, TUI, and web management interfaces.
+- Scheduling and centralized port management/reservation.
+- Integration with **Velocity** and **BungeeCord** proxies.
+- Management via **SSH** (public-key oriented design), CLI, TUI, and a web interface.
+- Secure, authenticated controller–node communication.
 
 ## Start here
 
-- Read the [architecture guide](/guides/architecture/) for the planned components and their responsibilities.
-- Check the [project status reference](/reference/project-status/) before relying on a feature.
+- **Run the current controller scaffold:** [Getting started](/guides/getting-started/)
+- **Understand the target design:** [Architecture](/guides/architecture/)
+- **Contribute safely:** [Development](/guides/development/) and [Security](/guides/security/)
+- **Track progress:** [Project status](/reference/project-status/) and [Roadmap](/reference/roadmap/)

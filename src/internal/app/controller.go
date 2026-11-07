@@ -1,6 +1,7 @@
 package app
 
 import (
+	"StupidCloud/config"
 	"StupidCloud/src/internal/node"
 	"StupidCloud/src/internal/proxy"
 	"StupidCloud/src/internal/service"
@@ -14,6 +15,8 @@ import (
 
 type Controller struct {
 	logger *slog.Logger
+
+	config *config.Config
 
 	SSHServer  *ssh.Server
 	WebServer  *web.Server
@@ -34,9 +37,10 @@ func (c *Controller) Start(ctx context.Context) interface{} {
 	return nil
 }
 
-func NewController(logger *slog.Logger) *Controller {
+func NewController(logger *slog.Logger, config *config.Config) *Controller {
 	return &Controller{
 		logger:   logger,
+		config:   config,
 		Services: service.NewManager(),
 		Nodes:    node.NewManager(),
 		Proxies:  proxy.NewManager(),

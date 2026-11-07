@@ -18,7 +18,7 @@ Legende:
 -   [x] Logger über `log/slog` initialisieren und injizieren.
 -   [x] `Controller.Start(context.Context)` implementieren.
 -   [x] Graceful Shutdown bei SIGINT und SIGTERM umsetzen.
--   [ ] Doppelte Starts verhindern und einen passenden Fehler
+-   [x] Doppelte Starts verhindern und einen passenden Fehler
     zurückgeben.
 -   [ ] Erste Tests für Controller-Lifecycle schreiben.
 -   [ ] `go test ./...` und `go vet ./...` erfolgreich ausführen.
